@@ -1,3 +1,4 @@
+
 class Person:
     people = {}
     def __init__(self, name: str, age: int) -> None:
