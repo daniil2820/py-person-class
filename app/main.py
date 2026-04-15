@@ -1,22 +1,52 @@
 
-class Person:
-    people = {}
-
-    def __init__(self, name: str, age: int) -> None:
-        self.name = name
-        self.age = age
-        Person.people[name] = self
+from typing import List
 
 
-def create_person_list(people: list) -> list:
-    Person.people = {}
-    result_list = [Person(p_dict["name"], p_dict["age"]) for p_dict in people]
-    for p_dict in people:
-        current_person = Person.people[p_dict["name"]]
-        wife_name = p_dict.get("wife")
-        if wife_name:
-            current_person.wife = Person.people[wife_name]
-        husband_name = p_dict.get("husband")
-        if husband_name:
-            current_person.husband = Person.people[husband_name]
-    return result_list
+class Car:
+    def __init__(
+        self,
+        comfort_class: int,
+        clean_mark: int,
+        brand: str
+    ) -> None:
+        self.comfort_class = comfort_class
+        self.clean_mark = clean_mark
+        self.brand = brand
+
+
+class CarWashStation:
+    def __init__(
+        self,
+        distance_from_city_center: float,
+        clean_power: int,
+        average_rating: float,
+        count_of_ratings: int
+    ) -> None:
+        self.distance_from_city_center = distance_from_city_center
+        self.clean_power = clean_power
+        self.average_rating = average_rating
+        self.count_of_ratings = count_of_ratings
+
+    def calculate_washing_price(self, car: Car) -> float:
+        price = (car.comfort_class
+                 * (self.clean_power - car.clean_mark)
+                 * self.average_rating) / self.distance_from_city_center
+        return round(price, 1)
+
+    def wash_single_car(self, car: Car) -> None:
+        if self.clean_power > car.clean_mark:
+            car.clean_mark = self.clean_power
+
+    def serve_cars(self, list_of_cars: List[Car]) -> float:
+        total_income = 0.0
+        for car in list_of_cars:
+            if car.clean_mark < self.clean_power:
+                total_income += round(self.calculate_washing_price(car), 1)
+                self.wash_single_car(car)
+        return round(total_income, 1)
+
+    def rate_service(self, new_rating: float) -> None:
+        total_score = self.average_rating * self.count_of_ratings
+        self.count_of_ratings += 1
+        new_average = (total_score + new_rating) / self.count_of_ratings
+        self.average_rating = round(new_average, 1)
